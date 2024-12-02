@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image, Linking } from 'react-native';
 import { FontAwesome, FontAwesome5, AntDesign } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { app } from '../../src/config/firebase'; 
 
-// Ensure that the Firebase app is initialized correctly
 const auth = getAuth(app);
 
 export default function LoginScreen() {
@@ -14,6 +14,24 @@ export default function LoginScreen() {
     const [password, setPassword] = useState('');
     const [rememberMe, setRememberMe] = useState(false);
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
+    useEffect(() => {
+        // Load saved credentials if 'Remember Me' was checked
+        const loadCredentials = async () => {
+            try {
+                const savedEmail = await AsyncStorage.getItem('email');
+                const savedPassword = await AsyncStorage.getItem('password');
+                if (savedEmail && savedPassword) {
+                    setEmail(savedEmail);
+                    setPassword(savedPassword);
+                    setRememberMe(true);
+                }
+            } catch (error) {
+                console.error('Failed to load credentials:', error);
+            }
+        };
+        loadCredentials();
+    }, []);
 
     const togglePasswordVisibility = () => {
         setIsPasswordVisible(!isPasswordVisible);
@@ -30,6 +48,13 @@ export default function LoginScreen() {
                 const user = userCredential.user;
                 console.log('User logged in:', user);
                 alert("Login successful!");
+                if (rememberMe) {
+                    AsyncStorage.setItem('email', email);
+                    AsyncStorage.setItem('password', password);
+                } else {
+                    AsyncStorage.removeItem('email');
+                    AsyncStorage.removeItem('password');
+                }
                 navigation.navigate('WelcomeScreen');
             })
             .catch((error) => {
