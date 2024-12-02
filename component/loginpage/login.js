@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { app } from '../../src/config/firebase'; 
 
+// Ensure that the Firebase app is initialized correctly
 const auth = getAuth(app);
 
 export default function LoginScreen() {
@@ -34,6 +35,10 @@ export default function LoginScreen() {
             .catch((error) => {
                 const errorCode = error.code;
 
+                // Log the error to get more information during development
+                console.error("Login error code:", errorCode);
+                console.error("Login error message:", error.message);
+
                 switch (errorCode) {
                     case 'auth/invalid-email':
                         alert("Please enter a valid email address.");
@@ -44,8 +49,11 @@ export default function LoginScreen() {
                     case 'auth/wrong-password':
                         alert("The password you entered is incorrect. Please try again.");
                         break;
+                    case 'auth/invalid-credential':
+                        alert("Invalid credentials. Please double-check your email and password.");
+                        break;
                     default:
-                        alert(error.message);
+                        alert(`Unexpected error: ${error.message}`);
                         break;
                 }
             });
