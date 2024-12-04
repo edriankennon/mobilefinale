@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Modal } from 'react-native';
 import { FontAwesome, Entypo } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import * as ImagePicker from 'expo-image-picker';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { app } from '../../src/config/firebase';
 
@@ -20,7 +21,8 @@ const SignUpScreen = () => {
   const [prices, setPrices] = useState('');
   const [contactUs, setContactUs] = useState('');
   const [profilePhoto, setProfilePhoto] = useState('');
-
+  const [businessImages, setBusinessImages] = useState([]);
+  
   const [isPasswordVisible, setPasswordVisible] = useState(false);
   const [isRolePickerVisible, setRolePickerVisible] = useState(false);
   const [isBusinessTypePickerVisible, setBusinessTypePickerVisible] = useState(false);
@@ -35,8 +37,8 @@ const SignUpScreen = () => {
       return;
     }
 
-    if (role === 'Business Owner' && (!businessName || !businessType || !location || !guidelines || !prices || !contactUs)) {
-      alert("All fields must be completed.");
+    if (role === 'Business Owner' && (!businessName || !businessType || !location || !guidelines || !prices || !contactUs || businessImages.length < 5)) {
+      alert("All fields must be completed and at least 5 images must be uploaded.");
       return;
     }
 
@@ -78,6 +80,49 @@ const SignUpScreen = () => {
     setBusinessTypePickerVisible(false);
   };
 
+  const pickImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      alert('Permission to access the camera roll is required!');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setProfilePhoto(result.assets[0].uri);
+    }
+  };
+
+  const pickImages = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      alert('Permission to access the camera roll is required!');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+      allowsMultipleSelection: true, // Allows selecting multiple images
+    });
+
+    if (!result.canceled) {
+      if (businessImages.length + result.assets.length > 10) {
+        alert('You can only upload up to 10 images.');
+      } else {
+        setBusinessImages([...businessImages, ...result.assets.map(asset => asset.uri)]);
+      }
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header} />
@@ -85,7 +130,7 @@ const SignUpScreen = () => {
 
       {/* Profile Photo */}
       <View style={styles.photoContainer}>
-        <TouchableOpacity style={styles.imageContainer}>
+        <TouchableOpacity style={styles.imageContainer} onPress={pickImage}>
           <Image source={{ uri: profilePhoto || 'https://via.placeholder.com/100' }} style={styles.image} />
           <FontAwesome name="camera" size={20} color="green" style={styles.cameraIcon} />
         </TouchableOpacity>
@@ -213,7 +258,7 @@ const SignUpScreen = () => {
           {/* Guidelines */}
           <Text style={styles.label}>Guidelines</Text>
           <View style={styles.inputGroup}>
-            <FontAwesome name="list" size={20} color="green" style={styles.icon} />
+            <FontAwesome name="book" size={20} color="green" style={styles.icon} />
             <TextInput
               style={styles.input}
               placeholder="Guidelines"
@@ -225,7 +270,7 @@ const SignUpScreen = () => {
           {/* Prices */}
           <Text style={styles.label}>Prices</Text>
           <View style={styles.inputGroup}>
-            <FontAwesome name="dollar" size={20} color="green" style={styles.icon} />
+            <FontAwesome name="money" size={20} color="green" style={styles.icon} />
             <TextInput
               style={styles.input}
               placeholder="Prices"
@@ -244,6 +289,22 @@ const SignUpScreen = () => {
               value={contactUs}
               onChangeText={setContactUs}
             />
+          </View>
+
+          {/* Business Images */}
+          <Text style={styles.label}>Business Images (5-10 images)</Text>
+          <View style={styles.inputGroup}>
+            <FontAwesome name="image" size={20} color="green" style={styles.icon} />
+            <TouchableOpacity onPress={pickImages}>
+              <Text style={styles.input}>Select Images</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Display Selected Images */}
+          <View style={styles.imagesContainer}>
+            {businessImages.map((image, index) => (
+              <Image key={index} source={{ uri: image }} style={styles.selectedImage} />
+            ))}
           </View>
         </>
       )}
