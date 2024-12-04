@@ -22,7 +22,7 @@ const SignUpScreen = () => {
   const [contactUs, setContactUs] = useState('');
   const [profilePhoto, setProfilePhoto] = useState('');
   const [businessImages, setBusinessImages] = useState([]);
-  
+
   const [isPasswordVisible, setPasswordVisible] = useState(false);
   const [isRolePickerVisible, setRolePickerVisible] = useState(false);
   const [isBusinessTypePickerVisible, setBusinessTypePickerVisible] = useState(false);
@@ -37,8 +37,8 @@ const SignUpScreen = () => {
       return;
     }
 
-    if (role === 'Business Owner' && (!businessName || !businessType || !location || !guidelines || !prices || !contactUs || businessImages.length < 5)) {
-      alert("All fields must be completed and at least 5 images must be uploaded.");
+    if (role === 'Business Owner' && (!businessName || !businessType || !location || !guidelines || !prices || !contactUs)) {
+      alert("All fields must be completed.");
       return;
     }
 
@@ -80,6 +80,7 @@ const SignUpScreen = () => {
     setBusinessTypePickerVisible(false);
   };
 
+  // Function to pick single image from gallery
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
@@ -99,6 +100,7 @@ const SignUpScreen = () => {
     }
   };
 
+  // Function to pick multiple images (5-10)
   const pickImages = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
@@ -108,18 +110,13 @@ const SignUpScreen = () => {
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
+      allowsMultipleSelection: true,
+      selectionLimit: 10,
       quality: 1,
-      allowsMultipleSelection: true, // Allows selecting multiple images
     });
 
     if (!result.canceled) {
-      if (businessImages.length + result.assets.length > 10) {
-        alert('You can only upload up to 10 images.');
-      } else {
-        setBusinessImages([...businessImages, ...result.assets.map(asset => asset.uri)]);
-      }
+      setBusinessImages(result.assets.map(asset => asset.uri));
     }
   };
 
@@ -292,18 +289,14 @@ const SignUpScreen = () => {
           </View>
 
           {/* Business Images */}
-          <Text style={styles.label}>Business Images (5-10 images)</Text>
-          <View style={styles.inputGroup}>
-            <FontAwesome name="image" size={20} color="green" style={styles.icon} />
-            <TouchableOpacity onPress={pickImages}>
-              <Text style={styles.input}>Select Images</Text>
-            </TouchableOpacity>
-          </View>
+          <Text style={styles.label}>Business Images (5-10)</Text>
+          <TouchableOpacity style={styles.imagePickerButton} onPress={pickImages}>
+            <Text style={styles.imagePickerButtonText}>Upload Images</Text>
+          </TouchableOpacity>
 
-          {/* Display Selected Images */}
-          <View style={styles.imagesContainer}>
-            {businessImages.map((image, index) => (
-              <Image key={index} source={{ uri: image }} style={styles.selectedImage} />
+          <View style={styles.imagePreviewContainer}>
+            {businessImages.map((uri, index) => (
+              <Image key={index} source={{ uri }} style={styles.imagePreview} />
             ))}
           </View>
         </>
@@ -459,6 +452,29 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'green',
     fontWeight: 'bold',
+  },
+  imagePreviewContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 10,
+  },
+  imagePreview: {
+    width: 100,
+    height: 100,
+    borderRadius: 10,
+    marginRight: 10,
+    marginBottom: 10,
+  },
+  imagePickerButton: {
+    backgroundColor: '#ddd',
+    paddingVertical: 10,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginVertical: 15,
+  },
+  imagePickerButtonText: {
+    fontSize: 16,
+    color: '#333',
   },
 });
 
