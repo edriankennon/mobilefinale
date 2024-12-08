@@ -1,11 +1,18 @@
 import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons'; 
+import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
 const BarangayDamilag = () => {
   const navigation = useNavigation();
   const [showFullText, setShowFullText] = useState(false);
+
+  const photos = [
+    require('../../assets/stage.png'),
+    require('../../assets/tree.png'),
+    require('../../assets/plant.png'),
+    require('../../assets/brigada.png'),
+  ];
 
   const toggleReadMore = () => {
     setShowFullText(!showFullText);
@@ -15,10 +22,7 @@ const BarangayDamilag = () => {
     <ScrollView style={styles.container}>
       {/* Header Section */}
       <View style={styles.headerContainer}>
-        <Image 
-          source={require('../../assets/damilag.png')}  
-          style={styles.headerImage}
-        />
+        <Image source={require('../../assets/damilag.png')} style={styles.headerImage} />
       </View>
 
       {/* Title and Address */}
@@ -46,56 +50,50 @@ const BarangayDamilag = () => {
       <View style={styles.overviewContainer}>
         <Text style={styles.sectionTitle}>Overview</Text>
         <Text style={styles.overviewText}>
-          {showFullText ? (
-            "Barangay Damilag in Bukidnon, Philippines, is attracting a diverse range of visitors, including local tourists, adventure seekers, cultural enthusiasts, families, eco-tourists, and a growing number of international travelers. These visitors are drawn to Damilag's natural beauty, adventure opportunities, and rich cultural heritage. Popular activities include hiking, mountain biking, exploring local culture, and participating in eco-friendly initiatives. The area is especially popular during the dry season and local festivals. Tourism has boosted the local economy and fostered cultural exchange, though it also presents challenges in environmental conservation, underscoring the need for sustainable practices."
-          ) : (
-            "Barangay Damilag in Bukidnon, Philippines, is attracting a diverse range of visitors, including local tourists, adventure seekers, cultural enthusiasts..."
-          )}
+          {showFullText
+            ? "Barangay Damilag in Bukidnon, Philippines, is attracting a diverse range of visitors, including local tourists, adventure seekers, cultural enthusiasts, families, eco-tourists, and a growing number of international travelers. These visitors are drawn to Damilag's natural beauty, adventure opportunities, and rich cultural heritage. Popular activities include hiking, mountain biking, exploring local culture, and participating in eco-friendly initiatives. The area is especially popular during the dry season and local festivals. Tourism has boosted the local economy and fostered cultural exchange, though it also presents challenges in environmental conservation, underscoring the need for sustainable practices."
+            : "Barangay Damilag in Bukidnon, Philippines, is attracting a diverse range of visitors, including local tourists, adventure seekers, cultural enthusiasts..."}
         </Text>
         <TouchableOpacity style={styles.readMoreButton} onPress={toggleReadMore}>
           <Text style={styles.readMoreText}>{showFullText ? 'Read Less' : 'Read More'}</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Feature Icons (Elected Officials, General Guidelines, etc.) */}
+      {/* Feature Icons */}
       <View style={styles.featuresContainer}>
         <View style={styles.featureRow}>
-          <TouchableOpacity style={styles.featureItem}>
+          <TouchableOpacity style={styles.featureItem} onPress={() => navigation.navigate('BrgyOfficials')}>
             <FontAwesome name="users" size={30} color="green" />
             <Text style={styles.featureText}>Elected Officials</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.featureItem}>
+
+          <TouchableOpacity style={styles.featureItem} onPress={() => navigation.navigate('DamilagGuidelines')}>
             <FontAwesome name="file-text" size={30} color="green" />
             <Text style={styles.featureText}>General Guidelines</Text>
           </TouchableOpacity>
         </View>
+
         <View style={styles.featureRow}>
-          <TouchableOpacity style={styles.featureItem}>
+          <TouchableOpacity style={styles.featureItem} onPress={() => navigation.navigate('DamilagAwards')}>
             <FontAwesome name="trophy" size={30} color="green" />
             <Text style={styles.featureText}>Awards</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.featureItem}>
+
+          <TouchableOpacity style={styles.featureItem} onPress={() => navigation.navigate('DamilagContact')}>
             <FontAwesome name="envelope" size={30} color="green" />
             <Text style={styles.featureText}>Contact Us</Text>
           </TouchableOpacity>
         </View>
       </View>
 
-      {/* Photos Section (Scrollable from left to right) */}
+      {/* Photos Section */}
       <Text style={styles.photosTitle}>Photos</Text>
-      <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.photoScrollView}>
-        <View style={styles.photoFrame}>
-          <Image source={require('../../assets/stage.png')} style={styles.photo} />   
-        </View>
-        <View style={styles.photoFrame}>
-          <Image source={require('../../assets/tree.png')} style={styles.photo} />
-        </View>
-        <View style={styles.photoFrame}>
-          <Image source={require('../../assets/plant.png')} style={styles.photo} />
-        </View>
-        <View style={styles.photoFrame}>
-          <Image source={require('../../assets/brigada.png')} style={styles.photo} />
-        </View>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.photoScrollView}>
+        {photos.map((photo, index) => (
+          <View key={index} style={styles.photoFrame}>
+            <Image source={photo} style={styles.photo} />
+          </View>
+        ))}
       </ScrollView>
     </ScrollView>
   );
@@ -106,22 +104,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
   },
-  backButton: {
-    position: 'absolute',
-    top: 40,
-    left: 20,
-    zIndex: 1,
-    backgroundColor: '#4CAF50',
-    padding: 10,
-    borderRadius: 50,
-  },
   headerContainer: {
     alignItems: 'center',
     marginTop: 90,
   },
   headerImage: {
     width: 180,
-    height: 180,  // Adjusted to match the design
+    height: 180,
     resizeMode: 'contain',
   },
   titleContainer: {
@@ -129,7 +118,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   headerText: {
-    fontSize: 26,  // Slightly larger
+    fontSize: 26,
     fontWeight: 'bold',
     textAlign: 'center',
     marginTop: 10,
@@ -218,18 +207,18 @@ const styles = StyleSheet.create({
   photoScrollView: {
     paddingLeft: 20,
   },
-  photoFrame: {
-    borderWidth: 'auto',                   // Add comma here to separate the properties
-    borderRadius: 10,                      // Rounded frame corners
-    padding: 3,                            // Space between the image and the frame
-    marginRight: 10,                       // Space between each framed image
-    elevation: 3,                          // Shadow effect for Android
-    shadowColor: '#000',                   // Shadow color for iOS
-    shadowOffset: { width: 0, height: 2 }, // Shadow offset for iOS
-    shadowOpacity: 0.2,                    // Shadow opacity for iOS
-    shadowRadius: 5,                       // Shadow radius for iOS
-    height: 200,
-    minWidth: 100,
+ photoFrame: {
+    borderWidth: 0, 
+    borderRadius: 10, 
+    padding: 3, 
+    marginRight: 10,
+    elevation: 0, 
+    shadowColor: 'transparent', 
+    shadowOffset: { width: 0, height: 0 }, 
+    shadowOpacity: 0, 
+    shadowRadius: 0, 
+    height: 200, 
+    minWidth: 100, 
   },
   photo: {
     width: 150,

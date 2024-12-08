@@ -3,6 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from './homepage/home';
 import BarangayDamilag from './brgydamilagpage/BarangayDamilagInfo';
 
+
 const Stack = createStackNavigator();
 
 const HomeStack = () => {
@@ -30,6 +31,7 @@ const HomeStack = () => {
         component={BarangayDamilag}
         options={{ headerShown: false }}
       />
+
     </Stack.Navigator>
   );
 };

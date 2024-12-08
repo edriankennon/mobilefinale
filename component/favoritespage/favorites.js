@@ -1,10 +1,13 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Dimensions, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import placesData from '../placesdatapage/placesdata';
 
+const { width, height } = Dimensions.get('window'); // Get screen dimensions
+
 const FavoritesScreen = ({ navigation }) => {
   const places = Object.values(placesData);
+  const firstFourPlaces = places.slice(0, 4); // Only get the first four places
 
   return (
     <View style={styles.container}>
@@ -17,7 +20,7 @@ const FavoritesScreen = ({ navigation }) => {
       </View>
 
       <ScrollView contentContainerStyle={styles.contentContainer}>
-        {places.map((place, index) => (
+        {firstFourPlaces.map((place, index) => (
           <TouchableOpacity
             key={index}
             style={styles.card}
@@ -29,7 +32,7 @@ const FavoritesScreen = ({ navigation }) => {
                 <Text style={styles.cardTitle}>{place.name}</Text>
                 <View style={styles.ratingContainer}>
                   {[...Array(place.rating)].map((_, idx) => (
-                    <Ionicons key={idx} name="star" size={16} color="gold" />
+                    <Ionicons key={idx} name="star" size={16} color="gold" style={styles.starIcon} />
                   ))}
                 </View>
               </View>
@@ -51,46 +54,45 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 15,
-    paddingTop: 60,
-    paddingBottom: 20,
+    paddingHorizontal: width * 0.05, // Dynamic padding based on screen width
+    paddingTop: height * 0.08, // Dynamic padding for top space
+    paddingBottom: height * 0.03, // Dynamic bottom padding
     backgroundColor: '#32a852',
   },
   headerText: {
-    fontSize: 24,
+    fontSize: width * 0.06, // Scaled font size
     fontWeight: 'bold',
     color: 'white',
-    paddingTop: 30,
-    paddingLeft: 145,
+    paddingLeft: width * 0.35, // Adjusted for better centering
   },
   headerIcons: {
     flexDirection: 'row',
   },
   icon: {
-    marginLeft: 15,
+    marginLeft: width * 0.04, // Adjusted margin based on screen width
   },
   contentContainer: {
-    paddingHorizontal: 20,
+    paddingHorizontal: width * 0.05,
     paddingBottom: 10,
   },
   card: {
     flexDirection: 'row',
     backgroundColor: 'white',
     borderRadius: 10,
-    marginVertical: 15,
+    marginVertical: height * 0.02, // Dynamic margin for cards
     overflow: 'hidden',
     elevation: 3,
   },
   cardImage: {
-    width: 100,
-    height: 100,
-    margin: 15,
+    width: width * 0.25, // Dynamic image width based on screen width
+    height: width * 0.25, // Dynamic image height
+    margin: width * 0.04, // Margin around image
     borderRadius: 10,
   },
   cardContent: {
     flex: 1,
-    paddingVertical: 20,
-    paddingRight: 15,
+    paddingVertical: height * 0.03, // Dynamic padding
+    paddingRight: width * 0.04, // Adjusted padding for right side
     justifyContent: 'center',
   },
   cardTitleRow: {
@@ -99,16 +101,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   cardTitle: {
-    fontSize: 18,
+    fontSize: width * 0.05, // Scaled font size
     fontWeight: 'bold',
   },
   cardSubtitle: {
-    fontSize: 14,
+    fontSize: width * 0.035, // Smaller subtitle font size
     color: 'gray',
-    marginTop: 5,
+    marginTop: height * 0.01, // Margin adjusted
   },
   ratingContainer: {
     flexDirection: 'row',
+    alignItems: 'center',  // Align stars vertically with the title
+    marginLeft: width * 0.02,  // Slight space between title and stars
+    justifyContent: 'flex-start',  // Ensures stars are beside the title
+  },
+  starIcon: {
+    marginRight: width * 0.01,  // Space between stars
   },
 });
 

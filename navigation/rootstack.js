@@ -14,11 +14,18 @@ import WelcomeScreen from '../component/welcomepage/welcomenotes';
 import SignUpScreen from '../component/signuppage/signup';
 import ContactUs from '../component/contactuspage/contactus';
 import Prices from '../component/pricespage/prices';
-import ReadMore from '../component/readmorepage/readmore';
 import SideMenu from '../navigation/sidemenu';
 import HomeStack from '../component/homestack';
 import BusinessDetails from '../component/businessdetailspage/BusinessDetails';
 import GuidelinesPage from '../component/guidelinespage/guidelines';
+import BrgyOfficials from '../component/brgyofficialpage/BrgyOfficials';
+import DamilagAwards from '../component/damilagawardspage/DamilagAwards';
+import DamilagGuidelines from '../component/guidelinesbrgypage/DamilagGuidelines';
+import HomeScreen from '../component/homepage/home';
+import placesData from '../component/placesdatapage/placesdata';
+import DamilagContact from '../component/damilagcontactpage/DamilagContact';
+
+
 
 const { primary, tertiary } = Colors;
 const Tab = createBottomTabNavigator();
@@ -29,9 +36,8 @@ const FavoritesStack = () => (
     <Stack.Screen name="FavoritesList" component={FavoritesScreen} />
     <Stack.Screen name="BusinessDetails" component={BusinessDetails} />
     <Stack.Screen name="ContactUs" component={ContactUs} />
-    <Stack.Screen name="Guidelines"component={GuidelinesPage}/>
+    <Stack.Screen name="Guidelines" component={GuidelinesPage}/>
     <Stack.Screen name="Prices" component={Prices} />
-    <Stack.Screen name="ReadMore" component={ReadMore} />
   </Stack.Navigator>
 );
 
@@ -84,10 +90,73 @@ const RootStack = () => {
             headerShown: false,
           }}
         />
+        <Stack.Screen
+          name="BrgyOfficials"
+          component={BrgyOfficials}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="DamilagAwards"
+          component={DamilagAwards}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="DamilagGuidelines"
+          component={DamilagGuidelines}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="DamilagContact"
+          component={DamilagContact}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="BusinessDetails"
+          component={BusinessDetails}
+          options={{
+            headerShown: false,
+          }}
+      />
+        <Stack.Screen
+          name="Prices"
+          component={Prices}
+          options={{
+            headerShown: false,
+          }}
+      />
+      <Stack.Screen
+          name="Guidelines"
+          component={GuidelinesPage}
+          options={{
+            headerShown: false,
+          }}
+      />
+       <Stack.Screen
+          name="ContactUs"
+          component={ContactUs}
+          options={{
+            headerShown: false,
+          }}
+      />
+      
+
+    
+
+
+  
       </Stack.Navigator>
     </NavigationContainer>
   );
 };
+
 
 const NavBar = () => {
   const [isMenuOpen, setMenuOpen] = useState(false);

@@ -1,11 +1,70 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { View, Text, StyleSheet, Image, TextInput, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { Dimensions } from 'react-native';
+
+// Get the screen dimensions
+const { width, height } = Dimensions.get('window');
+
+// Scale factor based on screen width (for better readability)
+const scaleFont = (size) => (width / 375) * size; // Based on an iPhone 6 (375px width)
 
 const HomeScreen = () => {
-
   const navigation = useNavigation();
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const attractions = [
+    { name: 'Damilag Hills', location: 'Purok 11, Manolo Fortich, 8703 Bukidnon', image: require('../../assets/hills.png') },
+    { name: 'Cafe 14-15', location: '9RW5+PH, Manolo Fortich, Bukidnon', image: require('../../assets/cafe.png') },
+    { name: 'Concetta Tourist', location: 'Purok 13, Manolo Fortich, 8703 Bukidnon', image: require('../../assets/concetta.png') },
+    { name: 'Bamboo Pavilion', location: '8RV8+4W, Manolo Fortich, Bukidnon', image: require('../../assets/bamboo.png') },
+  ];
+
+  const foods = [
+    { name: 'Umarika Cafe', location: '9R96+GGW Purok 16,Damilag, Manolo Fortich', image: require('../../assets/umarika.png') },
+    { name: 'Lady\'s First Resto', location: 'Damilag, Manolo Fortich, 8703 Bukidnon', image: require('../../assets/lady.png') },
+    { name: 'Rey\'s Warehouse', location: 'Villa Violeta, Damilag, Manolo Fortich, 8705 Bukidnon', image: require('../../assets/rey.png') },
+    { name: 'Baelly\'s Lechon House', location: 'Hi-way, Damilag, Manolo Fortich, 8703 Bukidnon', image: require('../../assets/baelly.png') },
+  ];
+
+  const hotels = [
+    { name: 'Eunice Villa', location: 'Purok 13, Damilag, Manolo Fortich, 8703 Bukidnon', image: require('../../assets/eunice.png') },
+    { name: 'BCC Business Hotel', location: '9R56+5RQ, Manolo Fortich, 8703 Bukidnon', image: require('../../assets/bcc.png') },
+    { name: 'Sebastian\'s Place', location: 'BCC Homes, B17 LT13 & LT15, Quatar Street, Manolo Fortich, 8703 Bukidnon', image: require('../../assets/sebastian.png') },
+  ];
+
+  const services = [
+    { name: 'Save Mart', location: '9R37+35R, Manolo Fortich, Bukidnon', image: require('../../assets/savemart.png') },
+    { name: 'Cuarteros Hardware', location: '9R96+FM5, Manolo Fortich, Bukidnon', image: require('../../assets/hardware.png') },
+    { name: 'Concetta Tourist', location: 'Purok 13, Manolo Fortich, 8703 Bukidnon', image: require('../../assets/concetta.png') },
+  ];
+
+  const transportation = [
+    { name: 'Tric-cab', location: 'Main Road', image: require('../../assets/bao.png') },
+    { name: 'Multi-cab', location: 'Secondary Road', image: require('../../assets/multicab.png') },
+    { name: 'Habal-habal', location: 'Village Path', image: require('../../assets/habal.png') },
+  ];
+
+  const filteredAttractions = attractions.filter((item) =>
+    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredFoods = foods.filter((item) =>
+    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredHotels = hotels.filter((item) =>
+    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredServices = services.filter((item) =>
+    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredTransportation = transportation.filter((item) =>
+    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <View style={styles.container}>
@@ -26,177 +85,142 @@ const HomeScreen = () => {
         <Text style={styles.greetingText}>Hi, Clyde!</Text>
         <Text style={styles.exploreText}>Explore Damilag</Text>
 
-        {/* Search Bar */}
-        <View style={styles.searchBarContainer}>
-          <Ionicons name="search" size={24} color="gray" style={styles.searchIcon} />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search places, food, or services..."
-          />
-        </View>
+  {/* Search Bar */}
+  <View style={styles.searchBarContainer}>
+    <Ionicons name="search" size={24} color="gray" style={styles.searchIcon} />
+    <TextInput
+      style={styles.searchInput}
+      placeholder="Search places, food, or services..."
+      value={searchQuery}
+      onChangeText={(text) => setSearchQuery(text)}
+    />
+  </View>
 
-        {/* Featured Attractions */}
-        <Text style={styles.sectionTitle}>Featured Attractions</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScrollView}>
-
-          {/* First Featured Attraction */}
-          <TouchableOpacity style={styles.card}>
-          <Image source={require('../../assets/hills.png')} style={styles.cardImage} />
-            <Text style={styles.cardTitle}>Damilag Hills</Text>
+  {/* Featured Attractions */}
+  {filteredAttractions.length > 0 && (
+    <>
+      <Text style={styles.sectionTitle}>Featured Attractions</Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScrollView}>
+        {filteredAttractions.map((item, index) => (
+          <TouchableOpacity
+            key={index}
+            style={styles.card}
+            onPress={() => navigation.navigate('BusinessDetails', { place: item })}
+          >
+            <Image source={item.image} style={styles.cardImage} />
+            <Text style={styles.cardTitle}>{item?.name || "Unknown Name"}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'top', marginHorizontal: 5 }}>
             <Ionicons name="location-outline" size={16} color="green" />
+            <Text style={styles.cardSubtitle}>{item.location || "Unknown Location"}</Text>
+            </View>
           </TouchableOpacity>
-
-          {/* Second Featured Attraction */}
-          <TouchableOpacity style={styles.card}>
-          <Image source={require('../../assets/cafe.png')} style={styles.cardImage} />
-            <Text style={styles.cardTitle}>Cafe 14-15</Text>
-            <Ionicons name="location-outline" size={16} color="green" />
-          </TouchableOpacity>
-
-          {/* Third Featured Attraction */}
-          <TouchableOpacity style={styles.card}>
-            <Image source={require('../../assets/concetta.png')} style={styles.cardImage} />
-            <Text style={styles.cardTitle}>Concetta Tourist</Text>
-            <Ionicons name="location-outline" size={16} color="green" />
-          </TouchableOpacity>
-
-          {/* Fourth Featured Attraction */}
-          <TouchableOpacity style={styles.card}>
-            <Image source={require('../../assets/bamboo.png')} style={styles.cardImage} />
-            <Text style={styles.cardTitle}>Bamboo Pavilion</Text>
-            <Ionicons name="location-outline" size={16} color="green" />
-          </TouchableOpacity>
-        </ScrollView>
-
-        {/* Food Section */}
-        <Text style={styles.sectionTitle}>Foods</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScrollView}>
-        
-         {/* First Food */}
-         <TouchableOpacity style={styles.card}
-         onPress={() => navigation.navigate('BusinessDetails', { place: { name: 'Umarika Cafe' } })} // Add navigation on press
-         >
-            <Image source={require('../../assets/umarika.png')} style={styles.cardImage} />
-            <Text style={styles.cardTitle}>Umarika Cafe</Text>
-            <Text style={styles.cardSubtitle}>Purok 15, Damilag, Manolo Fortich, Bukidnon.</Text>
-          </TouchableOpacity>
-
-          {/* Second Food */}
-          <TouchableOpacity style={styles.card}>
-            <Image source={require('../../assets/lady.png')} style={styles.cardImage} />
-            <Text style={styles.cardTitle}>Lady's First Resto</Text>
-            <Ionicons name="location-outline" size={16} color="green" />
-          </TouchableOpacity>
-
-          {/* Third Food */}
-          <TouchableOpacity style={styles.card}
-         onPress={() => navigation.navigate('BusinessDetails', { place: { name: 'Reys Warehouse' } })} // Add navigation on press
-         >
-            <Image source={require('../../assets/rey.png')} style={styles.cardImage} />
-            <Text style={styles.cardTitle}>Rey's Warehouse</Text>
-            <Text style={styles.cardSubtitle}>Purok 17, Damilag, Manolo Fortich, Bukidnon.</Text>
-          </TouchableOpacity>
-
-          {/* Fourth Food */}
-          <TouchableOpacity style={styles.card}>
-            <Image source={require('../../assets/baelly.png')} style={styles.cardImage} />
-            <Text style={styles.cardTitle}>Baelly's Lechon House</Text>
-            <Ionicons name="location-outline" size={16} color="green" />
-          </TouchableOpacity>
-        </ScrollView>
-
-        {/* Hotels and Accommodations Section */}
-        <Text style={styles.sectionTitle}>Hotels and Accommodations</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScrollView}>
-          {/* First */}
-         <TouchableOpacity style={styles.card}
-         onPress={() => navigation.navigate('BusinessDetails', { place: { name: 'Eunice Villa' } })} // Add navigation on press
-         > 
-            <Image source={require('../../assets/eunice.png')} style={styles.cardImage} />
-            <Text style={styles.cardTitle}>Eunice Villa</Text>
-            <Text style={styles.cardSubtitle}>Purok 16, Damilag, Manolo Fortich, Bukidnon.</Text>
-          </TouchableOpacity>
-
-          {/* Second */}
-          <TouchableOpacity style={styles.card}>
-            <Image source={require('../../assets/bcc.png')} style={styles.cardImage} />
-            <Text style={styles.cardTitle}>BCC Business Hotel</Text>
-            <Ionicons name="location-outline" size={16} color="green" />
-          </TouchableOpacity>
-
-          {/* Third */}
-          <TouchableOpacity style={styles.card}>
-            <Image source={require('../../assets/sebastian.png')} style={styles.cardImage} />
-            <Text style={styles.cardTitle}>Sebastian's Place</Text>
-            <Ionicons name="location-outline" size={16} color="green" />
-          </TouchableOpacity>
-
-        </ScrollView>
-
-        {/* Other Services Section */}
-        <Text style={styles.sectionTitle}>Other Services</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScrollView}>
-           {/* First */}
-         <TouchableOpacity style={styles.card}>
-            <Image source={require('../../assets/savemart.png')} style={styles.cardImage} />
-            <Text style={styles.cardTitle}>Save Mart</Text>
-            <Ionicons name="location-outline" size={16} color="green" />
-          </TouchableOpacity>
-
-          {/* Second */}
-          <TouchableOpacity style={styles.card}
-         onPress={() => navigation.navigate('BusinessDetails', { place: { name: 'Cuarteros Hardware' } })} // Add navigation on press
-         > 
-            <Image source={require('../../assets/hardware.png')} style={styles.cardImage} />
-            <Text style={styles.cardTitle}>Cuarteros Hardware</Text>
-            <Text style={styles.cardSubtitle}>Purok 18, Damilag, Manolo Fortich, Bukidnon.</Text>
-          </TouchableOpacity>
-
-          {/* Third */}
-          <TouchableOpacity style={styles.card}>
-            <Image source={require('../../assets/concetta.png')} style={styles.cardImage} />
-            <Text style={styles.cardTitle}>Concetta Tourist</Text>
-            <Ionicons name="location-outline" size={16} color="green" />
-          </TouchableOpacity>
-
-        </ScrollView>
-
-        {/* Transportation Section */}
-        <Text style={styles.sectionTitle}>Transportation</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScrollView}>
-         {/* First */}
-         <TouchableOpacity style={styles.card}>
-            <Image source={require('../../assets/bao.png')} style={styles.cardImage} />
-            <Text style={styles.cardTitle}>Tric-cab</Text>
-            <Text style={styles.cardSubtitle}>{/*asdfasdgasdg*/}</Text>
-          </TouchableOpacity>
-
-          {/* Second */}
-          <TouchableOpacity style={styles.card}>
-            <Image source={require('../../assets/multicab.png')} style={styles.cardImage} />
-            <Text style={styles.cardTitle}>Multi-cab</Text>
-            <Text style={styles.cardSubtitle}>{/*asdfasdgasdg*/}</Text>
-          </TouchableOpacity>
-
-          {/* Third */}
-          <TouchableOpacity style={styles.card}>
-            <Image source={require('../../assets/habal.png')} style={styles.cardImage} />
-            <Text style={styles.cardTitle}>Habal-habal</Text>
-            <Text style={styles.cardSubtitle}>{/*asdfasdgasdg*/}</Text>
-          </TouchableOpacity>
-        </ScrollView>
-
-        {/* Footer Section */}
-        <View style={styles.footerContainer}>
-          <Text style={styles.footerText}>Cultural Guidelines</Text>
-          <Text style={styles.footerDescription}>
-            Visiting Damilag soon? Understanding basic language, religion, social etiquette, customs, protocols, and work culture is a must.
-          </Text>
-          <TouchableOpacity style={styles.footerButton}>
-            <Text style={styles.footerButtonText}>Read more</Text>
-          </TouchableOpacity>
-        </View>
+        ))}
       </ScrollView>
+    </>
+  )}
+
+  {/* Foods Section */}
+  {filteredFoods.length > 0 && (
+    <>
+      <Text style={styles.sectionTitle}>Foods</Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScrollView}>
+        {filteredFoods.map((item, index) => (
+          <TouchableOpacity
+            key={index}
+            style={styles.card}
+            onPress={() => navigation.navigate('BusinessDetails', { place: item })}
+          >
+            <Image source={item.image} style={styles.cardImage} />
+            <Text style={styles.cardTitle}>{item?.name || "Unknown Name"}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'top', marginHorizontal: 5 }}>
+            <Ionicons name="location-outline" size={16} color="green" />
+            <Text style={styles.cardSubtitle}>{item.location || "Unknown Location"}</Text>
+            </View>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+    </>
+  )}
+
+  {/* Hotels and Accommodations Section */}
+  {filteredHotels.length > 0 && (
+    <>
+      <Text style={styles.sectionTitle}>Hotels and Accommodations</Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScrollView}>
+        {filteredHotels.map((item, index) => (
+          <TouchableOpacity
+            key={index}
+            style={styles.card}
+            onPress={() => navigation.navigate('BusinessDetails', { place: item })}
+          >
+            <Image source={item.image} style={styles.cardImage} />
+            <Text style={styles.cardTitle}>{item?.name || "Unknown Name"}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'top', marginHorizontal: 5 }}>
+            <Ionicons name="location-outline" size={16} color="green" />
+            <Text style={styles.cardSubtitle}>{item.location || "Unknown Location"}</Text>
+            </View>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+    </>
+  )}
+
+  {/* Other Services Section */}
+  {filteredServices.length > 0 && (
+    <>
+      <Text style={styles.sectionTitle}>Other Services</Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScrollView}>
+        {filteredServices.map((item, index) => (
+          <TouchableOpacity
+            key={index}
+            style={styles.card}
+            onPress={() => navigation.navigate('BusinessDetails', { place: item })}
+          >
+            <Image source={item.image} style={styles.cardImage} />
+            <Text style={styles.cardTitle}>{item?.name || "Unknown Name"}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'top', marginHorizontal: 5 }}>
+            <Ionicons name="location-outline" size={16} color="green" />
+            <Text style={styles.cardSubtitle}>{item.location || "Unknown Location"}</Text>
+            </View>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+    </>
+  )}
+
+  {/* Transportation Section */}
+  {filteredTransportation.length > 0 && (
+    <>
+      <Text style={styles.sectionTitle}>Transportation</Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScrollView}>
+        {filteredTransportation.map((item, index) => (
+          <TouchableOpacity key={index} style={styles.card}>
+            <Image source={item.image} style={styles.cardImage} />
+            <Text style={styles.cardTitle}>{item.name}</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'top', marginHorizontal: 5 }}>
+            <Ionicons name="location-outline" size={16} color="green" />
+            <Text style={styles.cardSubtitle}>{item.location}</Text>
+            </View>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+    </>
+  )}
+
+  {/* Footer Section */}
+  <View style={styles.footerContainer}>
+    <Text style={styles.footerText}>Cultural Guidelines</Text>
+    <Text style={styles.footerDescription}>
+      Visiting Damilag soon? Understanding basic language, religion, social etiquette, customs, protocols, and work culture is a must.
+    </Text>
+    <TouchableOpacity
+      style={styles.footerButton}
+      onPress={() => navigation.navigate('BarangayDamilag')}
+    >
+      <Text style={styles.footerButtonText}>Read more</Text>
+    </TouchableOpacity>
+  </View>
+</ScrollView>
     </View>
   );
 };
@@ -213,7 +237,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 25,
-    paddingTop: 30, // Adjusted padding to make space
+    paddingTop: 40, // Adjusted padding to make space
   },
   headerRight: {
     justifyContent: 'center',
@@ -229,34 +253,43 @@ const styles = StyleSheet.create({
     paddingBottom: 50, // Add padding at bottom to ensure content isn't cut off
   },
   greetingText: {
-    fontSize: 24,
+    fontSize: scaleFont(24), // Scaled font size for responsiveness
     fontWeight: 'bold',
     marginTop: 10,
   },
   exploreText: {
-    fontSize: 18,
+    fontSize: scaleFont(18), // Scaled font size for responsiveness
     color: 'gray',
     marginBottom: 20,
   },
   searchBarContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'gray',
-    borderRadius: 10,
+    backgroundColor: 'white', // White search bar background
+    borderWidth: 0, // No border for a cleaner look
+    borderRadius: 25, // Rounded edges
+    marginHorizontal: 20,
+    marginVertical: 10,
     paddingHorizontal: 10,
-    marginBottom: 20,
-    backgroundColor: 'white',
+    height: 40,
+    shadowColor: '#000', // Add slight shadow for depth
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2, // Shadow for Android
   },
+
   searchIcon: {
     marginRight: 10,
+    color: 'green',
   },
   searchInput: {
     flex: 1,
     height: 40,
+    fontSize: scaleFont(16), // Scaled font size for search input
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: scaleFont(18), // Scaled font size for section titles
     fontWeight: 'bold',
     marginVertical: 10,
   },
@@ -264,7 +297,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   card: {
-    width: 150,
+    width: width * 0.4, // 40% of the screen width for responsive sizing
     marginRight: 10,
     backgroundColor: 'white',
     borderRadius: 10,
@@ -275,12 +308,12 @@ const styles = StyleSheet.create({
     height: 100,
   },
   cardTitle: {
-    fontSize: 16,
+    fontSize: scaleFont(16), // Scaled font size for card titles
     fontWeight: 'bold',
     margin: 5,
   },
   cardSubtitle: {
-    fontSize: 14,
+    fontSize: scaleFont(14), // Scaled font size for subtitles
     color: 'gray',
     marginHorizontal: 5,
     marginBottom: 5,
@@ -292,12 +325,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   footerText: {
-    fontSize: 18,
+    fontSize: scaleFont(18), // Scaled font size for footer text
     fontWeight: 'bold',
     marginBottom: 10,
   },
   footerDescription: {
-    fontSize: 16,
+    fontSize: scaleFont(16), // Scaled font size for footer description
     color: 'gray',
     marginBottom: 20,
   },
@@ -309,7 +342,7 @@ const styles = StyleSheet.create({
   },
   footerButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: scaleFont(16), // Scaled font size for button text
     fontWeight: 'bold',
   },
 });

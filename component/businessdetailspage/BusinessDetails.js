@@ -1,11 +1,19 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import placesdata from '../placesdatapage/placesdata';
+
+// Get the screen dimensions
+const { width, height } = Dimensions.get('window');
+
+// Function to scale based on screen width (375px as a base)
+const scaleSize = (size) => (width / 375) * size;  // 375 is the width of iPhone 6, a standard reference device
+const scaleFont = (size) => (width / 375) * size;
 
 const BusinessDetails = ({ route, navigation }) => {
   const { place } = route.params || {};
   const placeDetails = placesdata[place?.name];
+  const [expanded, setExpanded] = useState(false); // State to manage toggle
 
   if (!placeDetails) {
     return (
@@ -36,13 +44,13 @@ const BusinessDetails = ({ route, navigation }) => {
         {/* Star Rating */}
         <View style={styles.ratingContainer}>
           {[...Array(placeDetails.rating)].map((_, i) => (
-            <Ionicons key={i} name="star" size={20} color="gold" />
+            <Ionicons key={i} name="star" size={scaleSize(20)} color="gold" />
           ))}
         </View>
 
         {/* Location */}
         <View style={styles.locationRow}>
-          <Ionicons name="location-outline" size={16} color="green" />
+          <Ionicons name="location-outline" size={scaleSize(16)} color="green" />
           <Text style={styles.locationDetail}>{placeDetails.location}</Text>
         </View>
 
@@ -51,53 +59,48 @@ const BusinessDetails = ({ route, navigation }) => {
 
         {/* Overview */}
         <Text style={styles.overviewTitle}>OVERVIEW</Text>
-        <Text style={styles.description}>{placeDetails.overview}</Text>
+        <Text style={styles.description}>
+          {expanded ? placeDetails.description : `${placeDetails.description.slice(0, 100)}...`}
+        </Text>
 
-        {/* Read More Button */}
-        <TouchableOpacity style={styles.readMoreButton}
-          onPress={() =>
-          navigation.navigate('ReadMore', {
-            description: placeDetails.description,
-            placeName: placeDetails.name,
-            location: placeDetails.location,
-            rating: placeDetails.rating,
-            image: placeDetails.images[0], // Pass the image here
-          })
-        }
-      >
-        <Text style={styles.readMoreButtonText}>Read More</Text>
+        {/* Toggle Button */}
+        <TouchableOpacity
+          style={styles.readMoreButton}
+          onPress={() => setExpanded(!expanded)} // Toggle expanded state
+        >
+          <Text style={styles.readMoreButtonText}>
+            {expanded ? 'Read Less' : 'Read More'}
+          </Text>
         </TouchableOpacity>
-
-
 
         {/* Action Buttons Section */}
         <View style={styles.actionContainer}>
-        <TouchableOpacity style={styles.actionButton}>
-            <Ionicons name="location-outline" size={30} color="black" />
+          <TouchableOpacity style={styles.actionButton}>
+            <Ionicons name="location-outline" size={scaleSize(30)} color="black" />
             <Text style={styles.actionText}>Location</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.actionButton}
+
+          <TouchableOpacity
+            style={styles.actionButton}
             onPress={() =>
-               navigation.navigate('Guidelines', {
+              navigation.navigate('Guidelines', {
                 guidelines: placeDetails.guidelines,
                 placeName: placeDetails.name,
                 location: placeDetails.location,
                 rating: placeDetails.rating,
                 image: placeDetails.images[0],
-            })
-          }
-        >
-          <Ionicons name="book-outline" size={30} color="black" />
-          <Text style={styles.actionText}>Guidelines</Text>
-        </TouchableOpacity>
+              })
+            }
+          >
+            <Ionicons name="book-outline" size={scaleSize(30)} color="black" />
+            <Text style={styles.actionText}>Guidelines</Text>
+          </TouchableOpacity>
 
-          <TouchableOpacity style={styles.actionButton}
-            onPress={() => navigation.navigate('Prices', {
-              placeDetails: placeDetails,
-            })
-          }
-        >
-            <FontAwesome5 name="percentage" size={30} color="black" />
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => navigation.navigate('Prices', { placeDetails: placeDetails })}
+          >
+            <FontAwesome5 name="percentage" size={scaleSize(30)} color="black" />
             <Text style={styles.actionText}>Prices</Text>
           </TouchableOpacity>
 
@@ -117,7 +120,7 @@ const BusinessDetails = ({ route, navigation }) => {
             }
             style={styles.actionButton}
           >
-            <FontAwesome5 name="address-book" size={30} color="black" />
+            <FontAwesome5 name="address-book" size={scaleSize(30)} color="black" />
             <Text style={styles.actionText}>Contact Us</Text>
           </TouchableOpacity>
         </View>
@@ -141,6 +144,7 @@ const BusinessDetails = ({ route, navigation }) => {
   );
 };
 
+
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
@@ -151,61 +155,39 @@ const styles = StyleSheet.create({
   },
   mainImage: {
     width: '100%',
-    height: 280,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
+    height: scaleSize(280),
+    borderBottomLeftRadius: scaleSize(20),
+    borderBottomRightRadius: scaleSize(20),
     resizeMode: 'cover',
   },
   headerOverlay: {
     position: 'absolute',
-    top: 60,
+    top: scaleSize(60),
     left: 0,
     right: 0,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 15,
-    paddingTop: 10,
+    paddingHorizontal: scaleSize(15),
+    paddingTop: scaleSize(10),
   },
   iconButton: {
-    padding: 5,
+    padding: scaleSize(5),
   },
   infoContainer: {
-    padding: 20,
+    padding: scaleSize(20),
     alignItems: 'center',
   },
   name: {
-    fontSize: 24,
+    fontSize: scaleFont(24),
     fontWeight: 'bold',
     color: '#4CAF50',
     width: '100%',
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: scaleFont(14),
     color: '#7A7A7A',
-    marginBottom: 2,
-    width: '100%',
-  },
-  locationRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  locationDetail: {
-    fontSize: 14,
-    color: 'black',
-    marginLeft: 5,
-  },
-  divider: {
-    width: '90%',
-    height: 1,
-    backgroundColor: '#4CAF50',
-    marginVertical: 15,
-  },
-  overviewTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 30,
+    marginBottom: scaleSize(2),
     width: '100%',
   },
   ratingContainer: {
@@ -213,83 +195,105 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     marginTop: 0,
-    marginBottom: 50,
+    marginBottom: scaleSize(50),
+  },
+  locationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  locationDetail: {
+    fontSize: scaleFont(14),
+    color: 'black',
+    marginLeft: scaleSize(5),
+  },
+  divider: {
+    width: '90%',
+    height: 1,
+    backgroundColor: '#4CAF50',
+    marginVertical: scaleSize(15),
+  },
+  overviewTitle: {
+    fontSize: scaleFont(14),
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: scaleSize(30),
+    width: '100%',
   },
   description: {
-    fontSize: 16,
+    fontSize: scaleFont(16),
     color: '#333',
     textAlign: 'center',
-    marginVertical: 10,
-    paddingHorizontal: 10,
-    lineHeight: 24,
+    marginVertical: scaleSize(10),
+    paddingHorizontal: scaleSize(10),
+    lineHeight: scaleSize(24),
   },
   readMoreButton: {
     backgroundColor: '#32a852',
-    paddingVertical: 10,
+    paddingVertical: scaleSize(10),
     alignItems: 'center',
-    borderRadius: 50,
+    borderRadius: scaleSize(50),
     width: '80%',
-    marginTop: 20,
+    marginTop: scaleSize(20),
   },
   readMoreButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: scaleFont(16),
     fontWeight: 'bold',
   },
   actionContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    marginTop: 20,
+    marginTop: scaleSize(20),
     width: '100%',
-    paddingHorizontal: 20,
+    paddingHorizontal: scaleSize(20),
   },
   actionButton: {
     width: '45%',
     backgroundColor: '#fff',
-    borderRadius: 10,
-    paddingVertical: 20,
+    borderRadius: scaleSize(10),
+    paddingVertical: scaleSize(20),
     alignItems: 'center',
-    marginVertical: 10,
+    marginVertical: scaleSize(10),
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
-    shadowRadius: 1.41,
+    shadowRadius: scaleSize(1.41),
     elevation: 2,
   },
   actionText: {
-    fontSize: 14,
+    fontSize: scaleFont(14),
     color: '#333',
-    marginTop: 10,
+    marginTop: scaleSize(10),
     fontWeight: '500',
   },
   goThereButton: {
     backgroundColor: '#32a852',
-    paddingVertical: 10,
+    paddingVertical: scaleSize(10),
     alignItems: 'center',
-    borderRadius: 50,
+    borderRadius: scaleSize(50),
     width: '80%',
-    marginTop: 20,
+    marginTop: scaleSize(20),
   },
   goThereButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: scaleFont(16),
     fontWeight: 'bold',
   },
   photosContainer: {
     width: '100%',
-    marginTop: 20,
+    marginTop: scaleSize(20),
   },
   photosTitle: {
-    fontSize: 18,
+    fontSize: scaleFont(18),
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: scaleSize(10),
   },
   photo: {
-    width: 120,
-    height: 180,
-    borderRadius: 15,
-    marginHorizontal: 8,
+    width: scaleSize(120),
+    height: scaleSize(180),
+    borderRadius: scaleSize(15),
+    marginHorizontal: scaleSize(8),
   },
 });
 
