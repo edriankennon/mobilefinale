@@ -4,11 +4,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { Dimensions } from 'react-native';
 
-// Get the screen dimensions
+
 const { width, height } = Dimensions.get('window');
 
-// Scale factor based on screen width (for better readability)
-const scaleFont = (size) => (width / 375) * size; // Based on an iPhone 6 (375px width)
+
+const scaleFont = (size) => (width / 375) * size; 
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -188,38 +188,56 @@ const HomeScreen = () => {
     </>
   )}
 
-  {/* Transportation Section */}
-  {filteredTransportation.length > 0 && (
-    <>
-      <Text style={styles.sectionTitle}>Transportation</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScrollView}>
-        {filteredTransportation.map((item, index) => (
-          <TouchableOpacity key={index} style={styles.card}>
-            <Image source={item.image} style={styles.cardImage} />
-            <Text style={styles.cardTitle}>{item.name}</Text>
+ {/* Transportation Section */}
+{filteredTransportation.length > 0 && (
+  <>
+    <Text style={styles.sectionTitle}>Transportation</Text>
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScrollView}>
+      {filteredTransportation.map((item, index) => (
+        <TouchableOpacity
+          key={index}
+          style={styles.card}
+          onPress={() => {
+            // Navigate based on item name or another property
+            if (item.name === 'Tric-cab') {
+              navigation.navigate('Tricab', { place: item });
+            } else if (item.name === 'Multi-cab') {
+              navigation.navigate('Multicab', { place: item });
+            } else if (item.name === 'Habal-habal') {
+              navigation.navigate('Habal', { place: item });
+            } else {
+              // Default navigation for other transportation types, if any
+              console.log('Unknown transportation type', item.name);
+            }
+          }}
+        >
+          <Image source={item.image} style={styles.cardImage} />
+          <Text style={styles.cardTitle}>{item.name}</Text>
           <View style={{ flexDirection: 'row', alignItems: 'top', marginHorizontal: 5 }}>
             <Ionicons name="location-outline" size={16} color="green" />
             <Text style={styles.cardSubtitle}>{item.location}</Text>
-            </View>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-    </>
-  )}
+          </View>
+        </TouchableOpacity>
+      ))}
+    </ScrollView>
+  </>
+)}
 
-  {/* Footer Section */}
-  <View style={styles.footerContainer}>
-    <Text style={styles.footerText}>Cultural Guidelines</Text>
-    <Text style={styles.footerDescription}>
-      Visiting Damilag soon? Understanding basic language, religion, social etiquette, customs, protocols, and work culture is a must.
-    </Text>
-    <TouchableOpacity
-      style={styles.footerButton}
-      onPress={() => navigation.navigate('BarangayDamilag')}
-    >
-      <Text style={styles.footerButtonText}>Read more</Text>
-    </TouchableOpacity>
-  </View>
+
+{/* Footer Section */}
+<View style={styles.footerContainer}>
+  <Text style={styles.footerText}>Cultural Guidelines</Text>
+  <Text style={styles.footerDescription}>
+    Visiting Damilag soon? Understanding basic language, religion, social etiquette, customs, protocols, and work culture is a must.
+  </Text>
+  <TouchableOpacity
+    style={styles.footerButton}
+    onPress={() => navigation.navigate('BarangayDamilag')}
+  >
+    <Text style={styles.footerButtonText}>Read more</Text>
+  </TouchableOpacity>
+</View>
+
 </ScrollView>
     </View>
   );

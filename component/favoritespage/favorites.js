@@ -1,26 +1,59 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Dimensions, Platform } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import placesData from '../placesdatapage/placesdata';
 
-const { width, height } = Dimensions.get('window'); // Get screen dimensions
-
 const FavoritesScreen = ({ navigation }) => {
-  const places = Object.values(placesData);
-  const firstFourPlaces = places.slice(0, 4); // Only get the first four places
+  const [searchQuery, setSearchQuery] = useState('');
+  const [favorites, setFavorites] = useState(Object.values(placesData)); // State to store favorite places
+
+  // Filter places based on the search query
+  const filteredPlaces = searchQuery
+    ? favorites.filter((place) =>
+        place.name.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : favorites;
+
+  // Remove all favorites
+  const handleRemoveAllFavorites = () => {
+    Alert.alert(
+      "Remove All Favorites",
+      "Are you sure you want to remove all your favorite places?",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "Remove", onPress: () => setFavorites([]) }, // Clear the favorites list
+      ]
+    );
+  };
 
   return (
     <View style={styles.container}>
+      {/* Header Section */}
       <View style={styles.headerContainer}>
         <Text style={styles.headerText}>My Places</Text>
-        <View style={styles.headerIcons}>
-          <Ionicons name="search" size={24} color="white" style={styles.icon} />
-          <Ionicons name="filter" size={24} color="white" style={styles.icon} />
-        </View>
       </View>
 
+      {/* Search Bar with Delete Icon */}
+      <View style={styles.searchBarWrapper}>
+        <View style={styles.searchBarContainer}>
+          <Ionicons name="search" size={20} color="#32a852" style={styles.searchIcon} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search..."
+            value={searchQuery}
+            onChangeText={(text) => setSearchQuery(text)}
+          />
+        </View>
+        {favorites.length > 0 && (
+          <TouchableOpacity onPress={handleRemoveAllFavorites} style={styles.deleteIcon}>
+            <Ionicons name="trash-outline" size={24} color="#ff4d4d" />
+          </TouchableOpacity>
+        )}
+      </View>
+
+      {/* Favorites List */}
       <ScrollView contentContainerStyle={styles.contentContainer}>
-        {firstFourPlaces.map((place, index) => (
+        {filteredPlaces.map((place, index) => (
           <TouchableOpacity
             key={index}
             style={styles.card}
@@ -32,7 +65,7 @@ const FavoritesScreen = ({ navigation }) => {
                 <Text style={styles.cardTitle}>{place.name}</Text>
                 <View style={styles.ratingContainer}>
                   {[...Array(place.rating)].map((_, idx) => (
-                    <Ionicons key={idx} name="star" size={16} color="gold" style={styles.starIcon} />
+                    <Ionicons key={idx} name="star" size={16} color="gold" />
                   ))}
                 </View>
               </View>
@@ -40,6 +73,9 @@ const FavoritesScreen = ({ navigation }) => {
             </View>
           </TouchableOpacity>
         ))}
+        {favorites.length === 0 && (
+          <Text style={styles.noFavoritesText}>No favorites to display.</Text>
+        )}
       </ScrollView>
     </View>
   );
@@ -51,48 +87,77 @@ const styles = StyleSheet.create({
     backgroundColor: '#e5e5e5',
   },
   headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: width * 0.05, // Dynamic padding based on screen width
-    paddingTop: height * 0.08, // Dynamic padding for top space
-    paddingBottom: height * 0.03, // Dynamic bottom padding
-    backgroundColor: '#32a852',
+    justifyContent: 'center',
+    paddingTop: 60,
+    paddingBottom: 20,
+    backgroundColor: '#32a852', // Original green header color
   },
   headerText: {
-    fontSize: width * 0.06, // Scaled font size
+    fontSize: 24,
     fontWeight: 'bold',
-    color: 'white',
-    paddingLeft: width * 0.35, // Adjusted for better centering
+    color: 'white', // White text to match the header
   },
-  headerIcons: {
+  searchBarWrapper: {
     flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between', // Ensure proper spacing between search bar and delete icon
+    marginHorizontal: 20,
+    marginVertical: 10,
   },
-  icon: {
-    marginLeft: width * 0.04, // Adjusted margin based on screen width
+  searchBarContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1, // Take up remaining space
+    backgroundColor: 'white', // White search bar background
+    borderRadius: 25, // Rounded edges
+    paddingHorizontal: 10,
+    height: 40,
+    shadowColor: '#000', // Add slight shadow for depth
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2, // Shadow for Android
+  },
+  searchIcon: {
+    marginRight: 10,
+    color: '#32a852', // Green icon to match header
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    color: '#000', // Black text for readability
+  },
+  deleteIcon: {
+    padding: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2, // Shadow for Android
   },
   contentContainer: {
-    paddingHorizontal: width * 0.05,
+    paddingHorizontal: 20,
     paddingBottom: 10,
   },
   card: {
     flexDirection: 'row',
     backgroundColor: 'white',
     borderRadius: 10,
-    marginVertical: height * 0.02, // Dynamic margin for cards
+    marginVertical: 15,
     overflow: 'hidden',
     elevation: 3,
   },
   cardImage: {
-    width: width * 0.25, // Dynamic image width based on screen width
-    height: width * 0.25, // Dynamic image height
-    margin: width * 0.04, // Margin around image
+    width: 100,
+    height: 100,
+    margin: 15,
     borderRadius: 10,
   },
   cardContent: {
     flex: 1,
-    paddingVertical: height * 0.03, // Dynamic padding
-    paddingRight: width * 0.04, // Adjusted padding for right side
+    paddingVertical: 20,
+    paddingRight: 15,
     justifyContent: 'center',
   },
   cardTitleRow: {
@@ -101,22 +166,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   cardTitle: {
-    fontSize: width * 0.05, // Scaled font size
+    fontSize: 18,
     fontWeight: 'bold',
   },
   cardSubtitle: {
-    fontSize: width * 0.035, // Smaller subtitle font size
+    fontSize: 14,
     color: 'gray',
-    marginTop: height * 0.01, // Margin adjusted
+    marginTop: 5,
   },
   ratingContainer: {
     flexDirection: 'row',
-    alignItems: 'center',  // Align stars vertically with the title
-    marginLeft: width * 0.02,  // Slight space between title and stars
-    justifyContent: 'flex-start',  // Ensures stars are beside the title
   },
-  starIcon: {
-    marginRight: width * 0.01,  // Space between stars
+  noFavoritesText: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: 'gray',
+    marginTop: 20,
   },
 });
 

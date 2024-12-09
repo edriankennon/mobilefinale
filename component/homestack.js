@@ -31,6 +31,8 @@ const HomeStack = () => {
         component={BarangayDamilag}
         options={{ headerShown: false }}
       />
+   
+
 
     </Stack.Navigator>
   );

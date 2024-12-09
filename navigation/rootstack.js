@@ -24,6 +24,10 @@ import DamilagGuidelines from '../component/guidelinesbrgypage/DamilagGuidelines
 import HomeScreen from '../component/homepage/home';
 import placesData from '../component/placesdatapage/placesdata';
 import DamilagContact from '../component/damilagcontactpage/DamilagContact';
+import Tricab from '../component/Transpopage/triCab';
+import MultiCab from '../component/Transpopage/multiCab';
+import Habal from '../component/Transpopage/habal';
+
 
 
 
@@ -31,15 +35,39 @@ const { primary, tertiary } = Colors;
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-const FavoritesStack = () => (
-  <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="FavoritesList" component={FavoritesScreen} />
-    <Stack.Screen name="BusinessDetails" component={BusinessDetails} />
-    <Stack.Screen name="ContactUs" component={ContactUs} />
-    <Stack.Screen name="Guidelines" component={GuidelinesPage}/>
-    <Stack.Screen name="Prices" component={Prices} />
-  </Stack.Navigator>
-);
+const FavoritesStack = () => {
+  const [favorites, setFavorites] = useState([]); // Manage the favorites list state
+
+  // Function to add a favorite
+  const addToFavorites = (place) => {
+    setFavorites((prevFavorites) => {
+      if (!prevFavorites.some((fav) => fav.name === place.name)) {
+        return [...prevFavorites, place]; // Add only if not already in favorites
+      }
+      return prevFavorites; // No duplicates
+    });
+  };
+
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      {/* Pass addToFavorites to BusinessDetails */}
+      <Stack.Screen
+        name="FavoritesList"
+        component={FavoritesScreen}
+        initialParams={{ favorites, addToFavorites }}
+      />
+      <Stack.Screen
+        name="BusinessDetails"
+        component={BusinessDetails}
+        initialParams={{ addToFavorites }} // Pass function here
+      />
+      <Stack.Screen name="ContactUs" component={ContactUs} />
+      <Stack.Screen name="Guidelines" component={GuidelinesPage} />
+      <Stack.Screen name="Prices" component={Prices} />
+      <Stack.Screen name="Favorite" component={FavoritesScreen} />
+    </Stack.Navigator>
+  );
+};
 
 const RootStack = () => {
   return (
@@ -146,12 +174,29 @@ const RootStack = () => {
             headerShown: false,
           }}
       />
-      
-
+        <Stack.Screen
+        name="Tricab"
+        component={Tricab}
+        options={{
+          headerShown: false,
+        }}
+        />
+        <Stack.Screen
+        name="Multicab"
+        component={MultiCab}
+        options={{
+          headerShown: false,
+        }}
+        />
+        <Stack.Screen
+        name="Habal"
+        component={Habal}
+        options={{
+          headerShown: false,
+        }}
+        />
     
-
-
-  
+      
       </Stack.Navigator>
     </NavigationContainer>
   );

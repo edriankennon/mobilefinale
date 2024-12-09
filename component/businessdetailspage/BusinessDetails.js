@@ -6,7 +6,6 @@ import placesdata from '../placesdatapage/placesdata';
 // Get the screen dimensions
 const { width, height } = Dimensions.get('window');
 
-// Function to scale based on screen width (375px as a base)
 const scaleSize = (size) => (width / 375) * size;  // 375 is the width of iPhone 6, a standard reference device
 const scaleFont = (size) => (width / 375) * size;
 
@@ -14,6 +13,7 @@ const BusinessDetails = ({ route, navigation }) => {
   const { place } = route.params || {};
   const placeDetails = placesdata[place?.name];
   const [expanded, setExpanded] = useState(false); // State to manage toggle
+  const [isFavorited, setIsFavorited] = useState(false); // State for heart button
 
   if (!placeDetails) {
     return (
@@ -38,7 +38,22 @@ const BusinessDetails = ({ route, navigation }) => {
 
       {/* Place Details */}
       <View style={styles.infoContainer}>
-        <Text style={styles.name}>{placeDetails.name}</Text>
+        {/* Row for Title and Heart Button */}
+        <View style={styles.titleRow}>
+          <Text style={styles.name}>{placeDetails.name}</Text>
+          {/* Heart button */}
+          <TouchableOpacity
+            onPress={() => setIsFavorited(!isFavorited)}
+            style={styles.heartButton}
+          >
+            <Ionicons
+              name={isFavorited ? 'heart' : 'heart-outline'}
+              size={24}
+              color={isFavorited ? 'red' : 'gray'}
+            />
+          </TouchableOpacity>
+        </View>
+
         <Text style={styles.subtitle}>Manolo Fortich, Bukidnon</Text>
 
         {/* Star Rating */}
@@ -144,7 +159,6 @@ const BusinessDetails = ({ route, navigation }) => {
   );
 };
 
-
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
@@ -178,11 +192,19 @@ const styles = StyleSheet.create({
     padding: scaleSize(20),
     alignItems: 'center',
   },
+  titleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+  },
   name: {
     fontSize: scaleFont(24),
     fontWeight: 'bold',
     color: '#4CAF50',
-    width: '100%',
+  },
+  heartButton: {
+    padding: scaleSize(5),
   },
   subtitle: {
     fontSize: scaleFont(14),
